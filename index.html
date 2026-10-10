@@ -62,21 +62,51 @@
       <div id="message" role="status" aria-live="polite"></div>
     </form>
   </main>
-  <script>
-    const form = document.getElementById('registrationForm');
-    const message = document.getElementById('message');
-    form.addEventListener('submit', function (event) {
-      event.preventDefault();
-      const playerName = document.getElementById('name').value.trim();
-      const age = Number(document.getElementById('age').value);
-      if (!playerName || age < 5 || age > 100) {
-        message.style.display = 'block';
-        message.textContent = 'Please enter a valid name and age (5–100).';
-        return;
-      }
+  
+<script>
+  const scriptURL = "https://script.google.com/macros/s/AKfycbyK1jLC6qmapcU3R0JFhDlpajD2-N8khFDcqLVyD625wiXcoNv5ojqDX1bggi8kmdLBaw/exec";
+
+  const form = document.getElementById('registrationForm');
+  const message = document.getElementById('message');
+  const button = form.querySelector('button[type="submit"]');
+
+  form.addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const playerName = document.getElementById('name').value.trim();
+    const age = Number(document.getElementById('age').value);
+
+    if (!playerName || age < 5 || age > 100) {
       message.style.display = 'block';
-      message.textContent = `Thanks, ${playerName}! The form design is working, but your details have not been submitted or saved.`;
-    });
-  </script>
+      message.textContent = 'Please enter a valid name and age (5–100).';
+      return;
+    }
+
+    button.disabled = true;
+    message.style.display = 'block';
+    message.textContent = 'Submitting registration...';
+
+    try {
+      await fetch(scriptURL, {
+        method: 'POST',
+        body: new URLSearchParams(new FormData(form)),
+        mode: 'no-cors'
+      });
+
+      message.textContent =
+        'Registration submitted. Please check with the organizer if you need confirmation.';
+      form.reset();
+
+    } catch (error) {
+      message.textContent =
+        'Could not submit the registration. Please try again.';
+    } finally {
+      button.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
+
 </body>
 </html>
